@@ -1,0 +1,30 @@
+#include <tunables/global>
+
+profile michi_susud flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+  network inet,
+  network inet6,
+  network netlink raw,
+  capability net_raw,
+  signal (send, receive),
+  /sbin/docker-init rix,
+  /dev/init rix,
+  /susud rix,
+  /usr/local/bin/mtr rix,
+  /usr/local/bin/mtr-packet rix,
+  /etc/hosts r,
+  /etc/hostname r,
+  /etc/resolv.conf r,
+  /etc/nsswitch.conf r,
+  /etc/ssl/certs/** r,
+  /proc/net/** r,
+  /proc/[0-9]*/net/** r,
+  /proc/[0-9]*/stat r,
+  /proc/[0-9]*/status r,
+  /sys/class/net/** r,
+  /sys/devices/**/net/** r,
+  /data/ r,
+  /data/options.json r,
+  /data/node.key{,.enrolled,.refused-token} rw,
+  /data/.susud-* rw,
+}

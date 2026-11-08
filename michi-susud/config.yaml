@@ -1,0 +1,41 @@
+name: Michi susu
+slug: michi_susud
+description: Read-only network diagnostics node (susu) for michi
+# Verified signed release; index digest and verification notes are in DOCS.md.
+version: "0cf918eba47cbe4d74fea0a16f837be9c1012566"
+image: ghcr.io/billchurch/michi-susud
+url: https://github.com/billchurch/michi-ha-addon/tree/main/michi-susud
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: manual
+init: true
+host_network: true
+privileged:
+  - NET_RAW
+apparmor: true
+environment:
+  SUSUD_HOME_ASSISTANT: "1"
+options:
+  node_name: susu-casita
+  broker_host: ""
+  controller_hosts: []
+  access_client_id: ""
+  access_client_secret: ""
+  enrol_token: ""
+  deny_extra:
+    - 100.64.0.0/10
+    - fd7a:115c:a1e0::/48
+  mtr: true
+schema:
+  node_name: str
+  broker_host: str
+  controller_hosts:
+    - str
+  access_client_id: password
+  access_client_secret: password
+  enrol_token: password
+  deny_extra:
+    - str
+  mtr: bool
