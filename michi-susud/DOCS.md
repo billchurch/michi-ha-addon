@@ -13,8 +13,8 @@ It is only useful with a michi controller and broker you run yourself.
 The add-on pulls `ghcr.io/billchurch/michi-susud:<version>`, where
 `version` is a full commit SHA from a signed release:
 
-- Commit: `0cf918eba47cbe4d74fea0a16f837be9c1012566`
-- Index digest: `sha256:f8f0565900c01c3522dc1e9b197b7588637c639e1a23bf43940c804a45cdd681`
+- Commit: `641d2aba4805609c667caa3c614acc9449d28880`
+- Index digest: `sha256:394bcf6be3823136b719ff8a318c9abcf4ee03932248a76c2611c37447dfe3e5`
 - Platforms: `linux/amd64`, `linux/arm64`
 
 Home Assistant pulls by tag and can't check signatures. Check the release
@@ -22,8 +22,8 @@ yourself before installing, with cosign 3:
 
 ```bash
 image=ghcr.io/billchurch/michi-susud
-commit=0cf918eba47cbe4d74fea0a16f837be9c1012566
-digest=sha256:f8f0565900c01c3522dc1e9b197b7588637c639e1a23bf43940c804a45cdd681
+commit=641d2aba4805609c667caa3c614acc9449d28880
+digest=sha256:394bcf6be3823136b719ff8a318c9abcf4ee03932248a76c2611c37447dfe3e5
 identity=https://github.com/billchurch/michi/.github/workflows/release-susud.yml@refs/heads/main
 issuer=https://token.actions.githubusercontent.com
 cosign verify --certificate-identity "$identity" --certificate-oidc-issuer "$issuer" \
@@ -33,33 +33,22 @@ cosign verify-attestation --type slsaprovenance1 --certificate-identity "$identi
   "$image@$digest" > /dev/null
 ```
 
-Keep automatic updates off and only move to another verified release SHA.
+This repository only moves to a release after its signature and provenance
+have been verified, so Home Assistant's auto-update is fine to leave on.
 
 ## Install
 
-1. In Settings → Add-ons → Add-on Store → ⋮ → Repositories, add
+1. In Settings → Apps (Add-ons) → App Store → ⋮ → Repositories, add
    `https://github.com/billchurch/michi-ha-addon`.
 2. Install **Michi susu**. Leave Start on boot off until it has enrolled.
    Keep Protection mode and AppArmor on.
-3. Prepare the add-on's data directory once. Supervisor creates it owned by
-   root; the image runs as UID/GID 65532. From the HAOS host (the console,
-   or developer SSH on port 22222), find the add-on's slug with
-   `ha addons list` and run:
-
-   ```bash
-   chown 65532:65532 /mnt/data/supervisor/addons/data/<slug>
-   chmod 0755 /mnt/data/supervisor/addons/data/<slug>
-   ```
-
-   Change only this directory, never recursively. Without host access, a
-   terminal add-on with Protection mode temporarily off can do the same
-   through Docker:
-   `docker run --rm -v /mnt/data/supervisor/addons/data:/d alpine:3.22 sh -c 'chown 65532:65532 /d/<slug> && chmod 0755 /d/<slug>'`.
-   Turn Protection mode back on afterwards.
+3. Configure and start it as described below. Supervisor creates the private
+   data directory on first start; the add-on's small launcher sets that
+   directory's ownership itself and then runs susud as UID/GID 65532 with no
+   capabilities. No host commands are needed, including after a restore.
 4. In Settings → System → Backups, turn on backup encryption. The add-on's
    data holds its node key and its secret options, so treat backups as
-   credentials. A restore must keep the directory's ownership; repeat step 3
-   if needed.
+   credentials.
 
 The host's `net.ipv4.ping_group_range` must include 65532 for ping.
 

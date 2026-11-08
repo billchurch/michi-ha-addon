@@ -2,7 +2,7 @@ name: Michi susu
 slug: michi_susud
 description: Read-only network diagnostics node (susu) for michi
 # Verified signed release; index digest and verification notes are in DOCS.md.
-version: "0cf918eba47cbe4d74fea0a16f837be9c1012566"
+version: "641d2aba4805609c667caa3c614acc9449d28880"
 image: ghcr.io/billchurch/michi-susud
 url: https://github.com/billchurch/michi-ha-addon/tree/main/michi-susud
 arch:
@@ -10,7 +10,8 @@ arch:
   - amd64
 startup: application
 boot: manual
-init: true
+# The launcher execs susud as PID 1; avoid a persistent root docker-init.
+init: false
 host_network: true
 privileged:
   - NET_RAW
